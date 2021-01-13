@@ -1,0 +1,1 @@
+export {objectWithoutProperties as default} from "../babel-helpers.module"

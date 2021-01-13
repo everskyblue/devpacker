@@ -1,0 +1,16 @@
+{
+  "name": "devpacker-util",
+  "version": "1.0.0",
+  "description": "utilidad de helpers para la funcionalidad al empaquetar archivos javascript",
+  "main": "babel-helpers.js",
+  "scripts": {
+    "rollup": "rollup -i babel-helpers.module.js -o babel-helpers.js -f cjs"
+  },
+  "keywords": [
+    "devpacker",
+    "devpacker-util",
+    "devpacker-helpers"
+  ],
+  "author": "Nike Madrid",
+  "license": "BSD-2-Clause"
+}

@@ -1,0 +1,1 @@
+export {createClass as default} from "../babel-helpers.module"

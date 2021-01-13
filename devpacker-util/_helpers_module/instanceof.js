@@ -1,0 +1,1 @@
+export {_instanceof as default} from "../babel-helpers.module"

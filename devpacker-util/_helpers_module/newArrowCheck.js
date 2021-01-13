@@ -1,0 +1,1 @@
+export {newArrowCheck as default} from "../babel-helpers.module"

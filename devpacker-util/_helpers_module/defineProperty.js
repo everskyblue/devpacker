@@ -1,0 +1,1 @@
+export {defineProperty as default} from "../babel-helpers.module"

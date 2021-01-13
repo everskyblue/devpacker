@@ -1,0 +1,1 @@
+export {classCallCheck as default} from "../babel-helpers.module"

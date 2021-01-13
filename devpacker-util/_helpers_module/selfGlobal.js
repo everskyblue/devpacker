@@ -1,0 +1,1 @@
+export {selfGlobal as default} from "../babel-helpers.module"

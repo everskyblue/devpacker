@@ -1,0 +1,1 @@
+export {objectDestructuringEmpty as default} from "../babel-helpers.module"

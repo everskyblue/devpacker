@@ -1,0 +1,1 @@
+export {_typeof as default} from "../babel-helpers.module"
