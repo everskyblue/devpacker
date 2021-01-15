@@ -111,4 +111,4 @@ var asyncGenerator = (function () {
 
 });
 
-module.exports = asyncGenerator;
+module.exports = asyncGenerator();

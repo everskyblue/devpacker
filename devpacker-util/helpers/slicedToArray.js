@@ -48,4 +48,4 @@ var slicedToArray = (function () {
     };
 });
 
-module.exports = slicedToArray;
+module.exports = slicedToArray();

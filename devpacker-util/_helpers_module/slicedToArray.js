@@ -1,1 +1,3 @@
-export {slicedToArray as default} from "../babel-helpers.module"
+import {slicedToArray} from "../babel-helpers.module"
+
+export default slicedToArray()

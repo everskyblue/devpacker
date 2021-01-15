@@ -44,4 +44,4 @@ var jsx = (function () {
     };
 });
 
-module.exports = jsx;
+module.exports = jsx();

@@ -1,1 +1,3 @@
-export {createClass as default} from "../babel-helpers.module"
+import {createClass} from "../babel-helpers.module"
+
+export default createClass()

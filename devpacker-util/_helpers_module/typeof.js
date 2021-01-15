@@ -1,1 +1,3 @@
-export {_typeof as default} from "../babel-helpers.module"
+import {_typeof} from "../babel-helpers.module"
+
+export default _typeof()

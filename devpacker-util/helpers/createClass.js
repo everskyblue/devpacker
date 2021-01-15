@@ -19,4 +19,4 @@ var createClass = (function() {
     };
 });
 
-module.exports = createClass;
+module.exports = createClass();

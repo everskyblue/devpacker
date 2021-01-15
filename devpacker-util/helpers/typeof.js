@@ -12,4 +12,4 @@ var _typeof = function () {
     };
 };
 
-module.exports = _typeof;
+module.exports = _typeof();

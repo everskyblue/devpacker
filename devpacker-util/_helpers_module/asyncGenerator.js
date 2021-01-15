@@ -1,1 +1,3 @@
-export {asyncGenerator as default} from "../babel-helpers.module"
+import {asyncGenerator} from "../babel-helpers.module"
+
+export default asyncGenerator();

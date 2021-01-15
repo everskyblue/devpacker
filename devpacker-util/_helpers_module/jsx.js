@@ -1,1 +1,3 @@
-export {jsx as default} from "../babel-helpers.module"
+import {jsx} from "../babel-helpers.module"
+
+export default jsx()
