@@ -1,0 +1,21 @@
+{
+  "name": "devpacker",
+  "version": "0.1",
+  "description": "transpilator ecma using babeljs and loader module Browser and NodeJs",
+  "main": "loader.bundle.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+     "babel",
+     "babel 6",
+     "loader",
+     "transpiler",
+     "devpacker",
+     "module",
+     "ecma5",
+     "ecma2015"
+  ],
+  "author": "Nike Madrid",
+  "license": "BSD-2-Clause"
+}
