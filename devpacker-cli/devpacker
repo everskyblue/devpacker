@@ -1,0 +1,106 @@
+#!/usr/bin/env node
+const entry = require("./index");
+const fs = require("fs")
+
+const args = process.argv.slice(2);
+
+const config = {
+    entry: '',
+    output: {
+        filename: '',
+        dirname: '',
+        format: ''
+    },
+    minified: false
+}
+
+
+const gn = {
+    entry: 'dir|file',
+    eof: 'filename|dirname',
+    options: {
+        format: 'umd',
+        minified: false,
+        useExternalHelpers: false,
+    }
+}
+
+const babelOptions = {
+    presets: ['es2015', 'stage-0'],
+    plugins: [
+        'transform-runtime',
+        'transform-regenerator',
+        'syntax-async-generators',
+        'transform-async-to-generator'
+    ],
+    minified: false
+}
+
+const c = [
+    ['-h', 'depliega lista de commando'],
+    ['-cf', 'crea un archivo de configuracion'],
+    ['example']
+];
+
+let root_project = process.cwd();
+
+if (root_project[root_project.length -1] !== '/') {
+    root_project += '/';
+}
+
+//const babel = require("../package/babel-6.26.0");
+//const loader = require("../transpiler/myloader");
+
+let filename_config = `${root_project}devpacker.config.js`;
+
+function setConfig(lco, cfgs) {
+    for (var key in cfgs) {
+        if(lco.hasOwnProperty(key)) {
+            if (typeof lco[key] === 'object') {
+                lco[key] = setConfig(lco[key], cfgs[key])
+            } else {
+                lco[key] = cfgs[key];
+            }
+        }
+    }
+    return lco;
+}
+
+if (args[0] === '-h') {
+    const help = `
+option [entry] (filename | directory) 
+use one option config (output.filename or output.dirname)
+        puede hacer una entrada de directory para que se 
+        produzca la salida de un archivo.
+        
+option type [format] (umd | cjs | amd) in output.format
+option config [minified] (true | false) out code minified 
+`;
+
+    console.log('\ndevpacker -h options [fileconfig]\n\n')
+    
+    if (args[1] === 'fileconfig') {
+        return console.log(help);
+    }
+    
+    c.forEach(list => console.log(`${list[0]}\t\t${list[1]}\n`))
+} else if (args.indexOf('-cf') >= 0) {
+    let data = JSON.stringify(config, null, 4).replace(/"(\w+?)"/g, "$1");
+    
+    fs.writeFile(
+            `${filename_config}`,
+            `module.exports = ${data}`,
+            {encoding: 'utf8'},
+            (err) => {
+                if (err) return console.error(err);
+                console.log(`created file!`);
+            }
+        );
+} else if (args.length === 0) {
+    if (fs.existsSync(filename_config)) {
+        setConfig(config, require(filename_config));
+        console.log(config)
+    } else {
+        console.error('not exists file configuration devpacker.config.js')
+    }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "devpacker-cli",
+  "version": "1.0.0",
+  "description": "devpacker-cli transpiler",
+  "main": "./devpacker",
+  "bin": {
+      "devpacker": "./devpacker"
+  },
+  "keywords": [
+    "devpacker",
+    "devpacker-cli"
+  ],
+  "author": "Nike Madrid",
+  "license": "MIT"
+}
