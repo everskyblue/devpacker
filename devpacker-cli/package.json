@@ -1,7 +1,7 @@
 {
   "name": "devpacker-cli",
   "version": "1.0.0",
-  "description": "devpacker-cli transpiler",
+  "description": "devpacker-cli compilador de codigo de facil uso con babel standalone 6",
   "main": "./devpacker",
   "bin": {
       "devpacker": "./devpacker"
