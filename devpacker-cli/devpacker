@@ -1,9 +1,58 @@
 #!/usr/bin/env node
-const entry = require("./index");
+
 const fs = require("fs")
+const command = require("./cmd")(process.argv.slice(2));
 
-const args = process.argv.slice(2);
 
+const input_options = [
+    ['-h', '--help'],
+    ['-cf', '--create-config'],
+    ['-m', '--minify'],
+    ['-f', '--format'],
+    ['-e', '-i', '--entry'],
+    ['-o', '--output'],
+];
+
+command.input(input_options, [
+    'muestra la lista de comandos',
+    'create un archivo de configuracion',
+    'salida de codigo minificado',
+    'salida en formato umd o cjs',
+    'entrada del archivo o carpeta a compilar'
+])
+
+command.option(0, function () {
+    this.log();
+})
+
+
+command.option(1, function () {
+    
+})
+
+
+command.option(2, function () {
+    
+})
+
+
+command.option(3, function () {
+    
+})
+
+command.option(4, function (vals) {
+    console.log(vals)
+})
+
+
+command.option(5, function () {
+    
+})
+
+
+
+command.run();
+return;
 const config = {
     entry: '',
     output: {
