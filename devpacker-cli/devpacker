@@ -23,8 +23,6 @@ const input_options = [
     ['-o', '--output'],
 ];
 
-console.time('time');
-
 command.input(input_options, [
     'muestra la lista de comandos',
     'create un archivo de configuracion',
@@ -66,22 +64,44 @@ function generateFile(config) {
     
     if (out.endsWith('.js') && config.entry.endsWith('.js')) {
         const split = out.split('/');split.pop();
-        recursiveDirs(split.join('/'));
+        recursiveDirs(absPath(split.join('/')));
         generator(loader(config.entry)).then(data => {
             fs.writeFileSync(absPath(out), data, {encoding: 'utf8'});
             console.log(`has been created! -> ${out}`)
             console.timeEnd('time')
         });
     } else if (!out.endsWith('.js') && !config.entry.endsWith('.js')) {
-        //
+        createFiles(absPath(addSlash(config.entry)), absPath(addSlash(out)));
+        console.timeEnd('time');
     } else {
         console.error('entry or output not valid')
     }
 }
 
+function createFiles(dirbase, outdir) {
+    recursiveDirs(outdir);
+    fs.readdir(dirbase, {
+        encoding: "utf-8",
+        withFileTypes: true
+    }, (err, files) => {
+        if (err) return console.error(err);
+        files.forEach(file => {
+            if (file.isFile() && file.name.endsWith('.js')) {
+                generator(loader(dirbase + file.name)).then(code => {
+                    fs.writeFileSync(outdir + file.name, code, {encoding: 'utf8'});
+                    console.dir(outdir + file.name);
+                    console.log('has been created!\n')
+                })
+            } else if (file.isDirectory() && file.name !== '.git') {
+                createFiles(dirbase + addSlash(file.name), outdir + addSlash(file.name));
+            }
+        });
+    });
+}
+
 function recursiveDirs(dir) {
-    if (!fs.existsSync(absPath(dir))) {
-        fs.mkdirSync(absPath(dir), {recursive: true});
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, {recursive: true});
     }
 }
 
