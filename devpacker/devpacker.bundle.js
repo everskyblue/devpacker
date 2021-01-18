@@ -1093,7 +1093,8 @@
 
    /** reset modules and babel modules required */
    function resetInstallModules() {
-       installModules = babelHelpersModules = [];
+       installModules = [];
+       babelHelpersModules = [];
    }
 
    /**
