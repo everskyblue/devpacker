@@ -53,8 +53,9 @@ module.exports = (args) => {
             return false;
         },
 
-        run() {
-            call.forEach(call => call())
+        run(fn) {
+            call.forEach(call => call());
+            if (typeof fn === 'function') fn.call(this);
         }
     }
 }
