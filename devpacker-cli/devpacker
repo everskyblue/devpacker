@@ -26,12 +26,12 @@ const input_options = [
 console.time('time');
 
 command.input(input_options, [
-    'muestra la lista de comandos',
-    'create un archivo de configuracion',
-    'salida de codigo minificado',
-    'salida en formato umd o cjs',
-    'entrada del archivo o carpeta a compilar',
-    'salida dada por nombre del archivo o carpeta al proporcinar la entrada'
+    'show command list',
+    'create a configuration file',
+    'minified code output',
+    'output in umd or cjs format',
+    'entry of the file or folder to compile',
+    'output given by file or folder name when providing input'
 ])
 
 command.option(0, command.log)
@@ -54,6 +54,8 @@ command.run(function () {
     const ufg = fs.existsSync(filec) ? require(filec) : config;
     if (ufg.entry.trim() && (ufg.outDir || ufg.outFile).trim()) {
         generateFile(ufg)
+    } else {
+        command.log();
     }
 });
 
