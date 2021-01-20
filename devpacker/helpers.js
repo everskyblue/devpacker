@@ -15,9 +15,17 @@ export default function __devpacker__($global, arr_modules) {
     }
     // main file, exports global module
     var _exports = modules[arr_modules[0][0]]();
-
-    for (var keyGlobal in _exports) {
-        $global[keyGlobal] = _exports[keyGlobal];
+    
+    if (isNode) {
+        module.exports = _exports;
+    } else if (typeof define === 'function' && define.amd) {
+        define(['exports'], exportsDefineProperties);
+    } else {
+        exportsDefineProperties($global);
+    }
+    
+    function exportsDefineProperties(target) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(_exports))
     }
 
     function __devpacker__define_module(moduleId, wrapper) {

@@ -72,7 +72,7 @@ function generateFile(config) {
     if (path.extname(out) && path.extname(config.entry)) {
         const split = out.split(path.sep);split.pop();
         recursiveDirs(absPath(split.join(path.sep)));
-        generator(loader(config.entry)).then(data => {
+        generator(loader(absPath(config.entry))).then(data => {
             fs.writeFileSync(absPath(out), data, {encoding: 'utf8'});
             console.log(`has been created! -> ${out}`)
             console.timeEnd('time')

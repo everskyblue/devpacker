@@ -1,6 +1,6 @@
 {
   "name": "devpacker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "compiler ecma5 using babeljs 6 and loader module Browser and NodeJs",
   "main": "devpacker.bundle.js",
   "scripts": {
