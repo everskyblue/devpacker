@@ -1,10 +1,10 @@
 {
   "name": "devpacker-cli",
-  "version": "1.0.2",
-  "description": "devpacker-cli compilador de codigo de facil uso con babel standalone 6",
-  "main": "./devpacker",
+  "version": "1.0.5",
+  "description": "devpacker-cli easy to use code compiler with babel standalone 6",
+  "main": "./index.js",
   "bin": {
-      "devpacker": "./devpacker"
+      "devpacker": "./bin/devpacker"
   },
   "keywords": [
     "devpacker",

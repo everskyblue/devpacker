@@ -1,11 +1,13 @@
-#!/usr/bin/env node
-
 const fs = require("fs")
+const path = require('path');
 const command = require("./cmd")(process.argv.slice(2));
-const {generator, loader, optionConfig} = require('../devpacker/devpacker.bundle')
 
-const workespace = addSlash(process.cwd());
-const filec = workespace + 'devpacker.config.js';
+const workespace = process.cwd();
+const reqfile = path.resolve(workespace, 'node_modules/devpacker/devpacker.bundle');
+
+const {generator, loader, optionConfig} = require(reqfile);
+
+const filec = absPath('devpacker.config.js');
 
 const config = {
     entry: '',
@@ -47,14 +49,14 @@ command.option(3, setConfig('format'))
 command.option(4, setConfig('entry'))
 
 command.option(5, (vals) => {
-    config[vals[0].endsWith('.js') ? 'outFile' : 'outDir'] = vals[0];
+    config[path.extname(vals[0]) ? 'outFile' : 'outDir'] = vals[0];
 })
 
 command.run(function () {
     const ufg = fs.existsSync(filec) ? require(filec) : config;
     if (ufg.entry.trim() && (ufg.outDir || ufg.outFile).trim()) {
         generateFile(ufg)
-    } else {
+    } else if (process.argv.length === 2) {
         command.log();
     }
 });
@@ -67,17 +69,16 @@ function generateFile(config) {
     const out = config.outFile || config.outDir;
     if (!out) return;
     optionConfig.setConfig(config.options);
-    
-    if (out.endsWith('.js') && config.entry.endsWith('.js')) {
-        const split = out.split('/');split.pop();
-        recursiveDirs(absPath(split.join('/')));
+    if (path.extname(out) && path.extname(config.entry)) {
+        const split = out.split(path.sep);split.pop();
+        recursiveDirs(absPath(split.join(path.sep)));
         generator(loader(config.entry)).then(data => {
             fs.writeFileSync(absPath(out), data, {encoding: 'utf8'});
             console.log(`has been created! -> ${out}`)
             console.timeEnd('time')
         });
-    } else if (!out.endsWith('.js') && !config.entry.endsWith('.js')) {
-        createFiles(absPath(addSlash(config.entry)), absPath(addSlash(out)));
+    } else if (!path.extname(out) && !path.extname(config.entry)) {
+        createFiles(absPath(config.entry), absPath(out));
         console.timeEnd('time');
     } else {
         console.error('entry or output not valid')
@@ -92,14 +93,14 @@ function createFiles(dirbase, outdir) {
     }, (err, files) => {
         if (err) return console.error(err);
         files.forEach(file => {
-            if (file.isFile() && file.name.endsWith('.js')) {
-                generator(loader(dirbase + file.name)).then(code => {
-                    fs.writeFileSync(outdir + file.name, code, {encoding: 'utf8'});
-                    console.dir(outdir + file.name);
+            if (file.isFile() && ['.js', '.node', '.cjs'].indexOf(path.extname(file.name)) >= 0) {
+                generator(loader(path.resolve(dirbase, file.name))).then(code => {
+                    fs.writeFileSync(path.resolve(outdir, file.name), code, {encoding: 'utf8'});
+                    console.dir(path.resolve(outdir, file.name));
                     console.log('has been created!\n')
                 })
             } else if (file.isDirectory() && file.name !== '.git') {
-                createFiles(dirbase + addSlash(file.name), outdir + addSlash(file.name));
+                createFiles(path.resolve(dirbase, file.name), path.resolve(outdir, file.name));
             }
         });
     });
@@ -111,13 +112,6 @@ function recursiveDirs(dir) {
     }
 }
 
-function absPath(path) {
-    return (workespace + (path[0] === '/' ? path.slice(1) : path));
-}
-
-function addSlash(path) {
-    if (path.slice(path.length - 1) !== '/') {
-        path += '/';
-    }
-    return path;
+function absPath(resl) {
+    return path.resolve(workespace, resl);
 }
