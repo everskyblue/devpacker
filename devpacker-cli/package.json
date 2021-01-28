@@ -1,6 +1,6 @@
 {
   "name": "devpacker-cli",
-  "version": "1.0.5",
+  "version": "1.2.11",
   "description": "devpacker-cli easy to use code compiler with babel standalone 6",
   "main": "./index.js",
   "bin": {

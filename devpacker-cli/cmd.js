@@ -40,7 +40,7 @@ module.exports = (args) => {
             input_lists.forEach(list => {
                 const desc = list.pop();
                 const cmd = list.join(',');
-                console.log(`${cmd}\t\t\t\t${desc}\n`)
+                console.log(`${cmd}\t\t\t${desc}\n`)
             });
         },
         
