@@ -9,6 +9,24 @@ var formats = ['umd', 'cjs'];
 
 var appConfig = Object.assign({}, defaultConfig);
 
+/**
+* @url https://github.com/jamiebuilds/babel-plugin-remove-comments
+*/
+Babel.registerPlugin('remove-comments', function(o) {
+    var t = o.types;
+    return {
+        visitor: {
+            Program: function (path, state) {
+                path.traverse({
+                    enter: function (path) {
+                        t.removeComments(path.node);
+                    }
+                });
+            }
+        }
+    };
+})
+
 function assign(target, assgn) {
     for (var key in assgn) {
         if (target.hasOwnProperty(key)) {
@@ -18,8 +36,8 @@ function assign(target, assgn) {
                 target[key] = assgn[key];
             }
         }
-    }    
-    
+    }
+
     return target;
 }
 
@@ -31,18 +49,22 @@ var config = {
         var options = this.config;
 
         var opt = {
-            presets: ['es2015', 'stage-0', 'react'], 
-            plugins: [], 
+            presets: ['es2015','stage-0','react'],
+            plugins: [],
             minified: options.minified
         }, corejs;
-        
-        if (options.useExternalHelpers && formats.indexOf(options.format)>=0) {
+
+        if (options.minified) {
+            opt.plugins.push('remove-comments');
+        }
+
+        if (options.useExternalHelpers && formats.indexOf(options.format) >= 0) {
             opt.plugins.push('external-helpers');
         } else {
             opt.plugins.push('transform-runtime');
             corejs = options.corejs;
         }
-    
+
         return {
             babel: opt,
             corejs: corejs
@@ -51,7 +73,7 @@ var config = {
 }
 
 Object.defineProperty(config, 'config', {
-   enumerable: true, 
+    enumerable: true,
     get: function () {
         return appConfig;
     },
