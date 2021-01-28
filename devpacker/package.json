@@ -1,10 +1,15 @@
 {
   "name": "devpacker",
-  "version": "0.2.0",
+  "version": "0.2.10",
   "description": "compiler ecma5 using babeljs 6 and loader module Browser and NodeJs",
   "main": "devpacker.bundle.js",
+  "homepage": "https://github.com/everskyblue/devpacker#README.md",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/everskyblue/devpacker.git"
   },
   "keywords": [
      "babel",

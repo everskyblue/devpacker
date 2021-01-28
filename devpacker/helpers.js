@@ -2,30 +2,29 @@
  * devpacker
  */
 export default function __devpacker__($global, arr_modules) {
-    var isNode = (
-        typeof require === 'function' && 
-        typeof module === 'object' && 
-        typeof module.exports === 'object'
-    );
-    // todo modules
-    var modules = {};
-    
-    for (var i = 0; i < arr_modules.length; i++) {
+    var isNode = (typeof require === 'function' && typeof module === 'object' && typeof module.exports === 'object'); 
+    defineGlobal();
+    // iterate modules
+    for (var i = 0, modules = {}; i < arr_modules.length; i++) {
         __devpacker__define_module(arr_modules[i][0], arr_modules[i][1]);
     }
-    // main file, exports global module
+    // execute main file
     var _exports = modules[arr_modules[0][0]]();
-    
+    // exports global module
     if (isNode) {
         module.exports = _exports;
     } else if (typeof define === 'function' && define.amd) {
-        define(['exports'], exportsDefineProperties);
+        define(['exports'], exportProperties);
     } else {
-        exportsDefineProperties($global);
+        exportProperties($global);
     }
-    
-    function exportsDefineProperties(target) {
+    // define properties to the target element
+    function exportProperties(target) {
         Object.defineProperties(target, Object.getOwnPropertyDescriptors(_exports))
+    }
+    // create key global if not exists
+    function defineGlobal() {
+        if (!("global" in $global)) $global.global = $global;
     }
 
     function __devpacker__define_module(moduleId, wrapper) {
@@ -40,7 +39,7 @@ export default function __devpacker__($global, arr_modules) {
                 var startsWith = modulepath.startsWith('./');
                 var root = startsWith ? (this.path + modulepath.slice(1)): modulepath;
                 if (startsWith && !root.endsWith('.js')) (root += '.js')
-                    if (root in modules) {
+                if (root in modules) {
                     if (this.children.indexOf(root) < 0) {
                         this.children.push(root);
                     }

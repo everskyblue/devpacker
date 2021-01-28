@@ -1,41 +1,42 @@
 # Devpacker
 
-es un empaquetador de módulos Javascript, convirtiendo 
-el codigo es2015 en codigo suportado para el navegador.
-para la conversación de codigo usa Babel version 6 y babel polyfill 6
-se puede usar atravez de navegador y a travez de lineas de comandos.
+is a Javascript module packer, converting
+The code is 2015 in supported code for the browser.
+for the code conversation use Babel version 6 and Babel polyfill 6
+It can be used through the browser and through command lines.
 
 ## Ejemplo
 
-importar scripts
+import scripts
 
 ```html
 <script src="./devpacker/package/babel-6.26.0.js"></script>
 <script src="./devpacker/package/babel-polyfill-6.26.0.min.js"></script>
-<script src="./devpacker/devpacker.bundle.js"></script>
+<script src="./devpacker/bundle/devpacker.js"></script>
 
 ```
-inicializar con conversion de codigo
+
+initialize with code conversion
 
 ```javascript
 
 devpacker.optionConfig.setConfig({
     /** 
-     * (cjs) para commonjs solo convierte el archivo actual
-     * (umd) empqueta todos los modulos del archivo principal
+     * (cjs) for commonjs it just converts the current file
+     * (umd) packages all modules from main file
     */
     format: 'umd',
-    // codigo minificado al covertir
+    // minified code when converting
     minified: false,
     /**
-     * varia el formato dado en:
-     * (umd) usara babel helpers de un archivo externo
-     * (cjs) si es true usara los helpers de devpacker lo esencial de babel helpers. si es false usara babel runtime helpers
+     * (false) will use the global babelHelpers helpers
+     * (true) will use babel-runtime
      */
     useExternalHelpers: false,
     /**
-     * cuando useExternalHelpers es false y el formart es cjs
-     * no se requerira el uso del paquete corejs
+     * specify if you want to use babel-runtime / corejs
+     * when false verifies and returns the objects
+     * or throw an error
      */
     corejs: false
 });
@@ -46,12 +47,13 @@ devpacker.generator(devpacker.loader('./example/main.js')).then(function(code) {
 
 ```
 
-para usar en linea de comando use
+to use in command line use
+
 ```bash
 > npm install -g devpacker-cli
 > devpacker -c
 ```
-para mas informacion lea devpacker-cli
+for more information read devpacker-cli
 
 ---
 ### Nota

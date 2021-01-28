@@ -1,16 +1,28 @@
 import optionConfig from "./config";
 import {isNode, isBrowser} from "./util.js";
 import strBabelHelpers from "./str-babel-helpers"
-import {strDevpacker, strCallbackWrap} from './str-helpers';
+import {strDevpacker, strCallbackWrap, strCheckMethod, strCheckFunction, strCheck} from './str-helpers';
 
 const babel = !isBrowser ? require("./package/babel-6.26.0") : window.Babel;
 const fs = isNode ? require('fs'): null;
 
 const RGX_REQUIRE = /require\s*(?:\(['"]babel-runtime\/(.*?)['"]\))/g;
 const RGX_REQUIRE_FILE = /(?:['|"](.*?)['|"])/;
+const babelCoreJs = 'babel-runtime/core-js/';
+let corejsInstance = [
+    'map',
+    'observable',
+    'promise',
+    'set',
+    'symbol',
+    'weak-map',
+    'weak-set'
+];
 
+let already_read = [];
 let installModules = [];
 let babelHelpersModules = [];
+
 
 /**
  * @param {string} source
@@ -33,7 +45,7 @@ function _invalid_matchModuleRequire(source) {
 export function resolveModuleDependecy(path_base, deps) {
     return deps.map(dep => {
         if (dep.includes('./')) {
-            dep = (path_base + dep.slice(2));
+            dep = (path_base + dep.slice(1));
         }
 
         if (!dep.includes('.js')) {
@@ -41,7 +53,7 @@ export function resolveModuleDependecy(path_base, deps) {
         }
 
         return loader(dep);
-    });
+    }).filter(promise => (promise instanceof Promise));
 }
 
 /**
@@ -72,7 +84,7 @@ export function reader(filename, callback) {
  */
 export function basename(root_file) {
     const last = root_file.lastIndexOf('/');
-    return (last > 1 ? root_file.slice(0, (last+1)): root_file);
+    return ( last <= 1 ) ? '/' : root_file.slice(0, last);
 }
 
 
@@ -84,7 +96,7 @@ export function basename(root_file) {
 function nodeReadFile(file, callback) {
     return fs.readFile(file, 'utf8', (err, data) => {
         callback({
-            err: (err||false),
+            err: err,
             data
         });
     });
@@ -102,7 +114,7 @@ function browserReadFile(file, callback) {
             data: data
         }));
     }).catch(err => callback({
-        err: (err || true),
+        err: (err || 'error read file'),
         data: null
     }));
 }
@@ -111,18 +123,32 @@ function browserReadFile(file, callback) {
 function resetInstallModules() {
     installModules = [];
     babelHelpersModules = [];
+    already_read = [];
 }
 
 /**
  * replace babel runtime module
- * @example require("babel-runtime/**")
+ * @example require("babel-runtime/.*");
  * @param {string} source
  * @return {string}
  */
 function replaceBabelModule(source) {
     babelHelpersModules.forEach(function(runtime) {
-        source = source.replace(runtime, 'devpacker-util/helpers/'+ runtime.split('/').pop())
-    })
+        if (runtime.includes(babelCoreJs)) {
+            let names = runtime.replace(babelCoreJs,'').split('/')
+            let fname = names[0].removeLessAndCapitalize( corejsInstance.indexOf(names[0]) >= 0 || names.length>1);
+            source = source.replace(new RegExp(`(?:require\\("${runtime.replace(/\//g, '\\/')}"\\);)`, 'g'), m => {
+                return 'getOrThrow.' + (names.length === 1 ? `checkFunction(global.${fname});` :`checkMethod(global.${fname}, "${names[1].removeLessAndCapitalize()}");`)
+            }); 
+        } else {
+            source = source.replace(runtime, 'devpacker-util/helpers/'+runtime.split('/').pop())
+        }
+    });
+    
+    if (babelHelpersModules.find(rmt => rmt.includes(babelCoreJs)))  {
+        source = 'var getOrThrow = require("devpacker-util/fn-get-or-throw");\n' + source;
+    }
+    
     return source;
 }
 
@@ -132,15 +158,29 @@ function replaceBabelModule(source) {
  * @return {string}
  */
 function transformCodeToUMD(mods) {
-    if (!optionConfig.config.useExternalHelpers && isBrowser) {
+    if (!optionConfig.config.useExternalHelpers) {
+        let s;
+        if (!optionConfig.config.corejs&&babelHelpersModules.length) mods.push({module: 'devpacker-util/fn-get-or-throw', source: strCheck()})
         babelHelpersModules.forEach(function(runtime) {
-            mods.push({module: runtime, source: strBabelHelpers[runtime]})
+            if (optionConfig.config.corejs && runtime.includes(babelCoreJs)) return;
+            if (runtime.includes(babelCoreJs)) {
+                let names = runtime.replace(babelCoreJs, '').split('/');
+                let fname = names[0].removeLessAndCapitalize( corejsInstance.indexOf(names[0]) >= 0 || names.length>1);
+                if (names.length === 1) {
+                    s = strCheckFunction(fname);
+                } else {
+                    s = strCheckMethod(fname, names[1].removeLessAndCapitalize())
+                }
+            } else {
+                s = strBabelHelpers[runtime];
+            }
+            mods.push({module: runtime, source: s})
         })
     }
     
     var params = mods.map(({source, module}) => {
-        if (!optionConfig.config.useExternalHelpers && isNode) source = replaceBabelModule(source);
-        return `["${module}", ${strCallbackWrap(source)}]`;
+        if (optionConfig.config.useExternalHelpers) source = replaceBabelModule(source);
+        return `["${isNode ? module.replace(installModules.root, '') : module}", ${strCallbackWrap(source)}]`;
     });
     
     return (`(${strDevpacker()})(this, [${params.join(',\n')}])`);
@@ -153,7 +193,7 @@ function transformCodeToUMD(mods) {
  */
 function transformCodeToCJS(mods) {
     var source = mods[0].source;
-    if (!optionConfig.corejs) {
+    if (!optionConfig.config.corejs) {
         source = replaceBabelModule(source);
     }
     return source;
@@ -188,14 +228,15 @@ function transformCode() {
  * @return {Promise}
  */
 export function loader(filename) {
+    if (already_read.indexOf(filename) >=0) return;
+    already_read.push(filename);
     return new Promise((resolve) => {
         reader(filename, function(es) {
             const err = es.err;
             const data = es.data;
-            if (err) console.log('ocurrio un error');
+            if (err) return console.error(err);
             const transform = babel.transform(data, optionConfig.getCompileOptions().babel);
             const childs = objectToArrayModuleImported(transform.metadata.modules.imports);
-            
             const solve = {
                 module: filename,
                 source: transform.code,
@@ -203,31 +244,29 @@ export function loader(filename) {
             };
             
             _invalid_matchModuleRequire(solve.source);
-            
             if (optionConfig.config.format === 'umd') {
                 solve.deps = resolveModuleDependecy(basename(filename), childs);
             }
             
-            if (!installModules.main) {
-                installModules.main = basename(filename);
+            if (!installModules.root) {
+                installModules.root = isNode ? process.cwd() : basename(filename);
             }
             
             solve.deps = Promise.all(solve.deps);
-            
             solve.deps.then(values => {
                 resolve(solve);
                 return values
             })
         });
     }).then(solve =>{
-        if (solve) {
-            installModules.push(solve);
-        }
+        if (solve) installModules.push(solve);
     })
 }
 
 export function generator(loader) {
     return loader.then(transformCode);
 }
+
+export const VERSION = '0.2.7';
 
 export {optionConfig};
