@@ -126,6 +126,12 @@ function resetInstallModules() {
     already_read = [];
 }
 
+function removeRN(str) {
+    return optionConfig.config.minified ? 
+        str.replace(/(\n\s*|\/\/.*| \s|\n)+/g, '') :
+        str;
+}
+
 /**
  * replace babel runtime module
  * @example require("babel-runtime/.*");
@@ -145,8 +151,8 @@ function replaceBabelModule(source) {
         }
     });
     
-    if (babelHelpersModules.find(rmt => rmt.includes(babelCoreJs)))  {
-        source = 'var getOrThrow = require("devpacker-util/fn-get-or-throw");\n' + source;
+    if (!!babelHelpersModules.find(rmt => rmt.includes(babelCoreJs)))  {
+        source = 'var getOrThrow = require("devpacker-util/fn-get-or-throw");'+ (optionConfig.config.minified?'\n':'') + source;
     }
     
     return source;
@@ -167,9 +173,9 @@ function transformCodeToUMD(mods) {
                 let names = runtime.replace(babelCoreJs, '').split('/');
                 let fname = names[0].removeLessAndCapitalize( corejsInstance.indexOf(names[0]) >= 0 || names.length>1);
                 if (names.length === 1) {
-                    s = strCheckFunction(fname);
+                    s = removeRN(strCheckFunction(fname));
                 } else {
-                    s = strCheckMethod(fname, names[1].removeLessAndCapitalize())
+                    s = removeRN(strCheckMethod(fname, names[1].removeLessAndCapitalize()));
                 }
             } else {
                 s = strBabelHelpers[runtime];
@@ -179,11 +185,11 @@ function transformCodeToUMD(mods) {
     }
     
     var params = mods.map(({source, module}) => {
-        if (optionConfig.config.useExternalHelpers) source = replaceBabelModule(source);
-        return `["${isNode ? module.replace(installModules.root, '') : module}", ${strCallbackWrap(source)}]`;
+        if (!optionConfig.config.corejs) source = replaceBabelModule(source);
+        return `["${isNode ? module.replace(installModules.root, '') : module}", ${removeRN(strCallbackWrap(source))}]`;
     });
     
-    return (`(${strDevpacker()})(this, [${params.join(',\n')}])`);
+    return (`(${removeRN(strDevpacker())})(this, [${removeRN(params.join(`,${optionConfig.getNewLine()}`))}])`);
 }
 
 /**

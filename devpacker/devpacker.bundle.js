@@ -16,8 +16,8 @@
     var appConfig = Object.assign({}, defaultConfig);
 
     /**
-    * @url https://github.com/jamiebuilds/babel-plugin-remove-comments
-    */
+     * @url https://github.com/jamiebuilds/babel-plugin-remove-comments
+     */
     Babel.registerPlugin('remove-comments', function(o) {
         var t = o.types;
         return {
@@ -75,6 +75,9 @@
                 babel: opt,
                 corejs: corejs
             }
+        },
+        getNewLine: function () {
+            return !this.config.minified ? '\n' : '';
         }
     };
 
@@ -974,6 +977,12 @@ exports.checkMethod = checkMethod;`
         already_read = [];
     }
 
+    function removeRN(str) {
+        return config.config.minified ? 
+            str.replace(/(\n\s*|\/\/.*| \s|\n)+/g, '') :
+            str;
+    }
+
     /**
      * replace babel runtime module
      * @example require("babel-runtime/.*");
@@ -993,8 +1002,8 @@ exports.checkMethod = checkMethod;`
             }
         });
         
-        if (babelHelpersModules.find(rmt => rmt.includes(babelCoreJs)))  {
-            source = 'var getOrThrow = require("devpacker-util/fn-get-or-throw");\n' + source;
+        if (!!babelHelpersModules.find(rmt => rmt.includes(babelCoreJs)))  {
+            source = 'var getOrThrow = require("devpacker-util/fn-get-or-throw");'+ (config.config.minified?'\n':'') + source;
         }
         
         return source;
@@ -1015,9 +1024,9 @@ exports.checkMethod = checkMethod;`
                     let names = runtime.replace(babelCoreJs, '').split('/');
                     let fname = names[0].removeLessAndCapitalize( corejsInstance.indexOf(names[0]) >= 0 || names.length>1);
                     if (names.length === 1) {
-                        s = strCheckFunction(fname);
+                        s = removeRN(strCheckFunction(fname));
                     } else {
-                        s = strCheckMethod(fname, names[1].removeLessAndCapitalize());
+                        s = removeRN(strCheckMethod(fname, names[1].removeLessAndCapitalize()));
                     }
                 } else {
                     s = todo[runtime];
@@ -1027,11 +1036,11 @@ exports.checkMethod = checkMethod;`
         }
         
         var params = mods.map(({source, module}) => {
-            if (config.config.useExternalHelpers) source = replaceBabelModule(source);
-            return `["${isNode ? module.replace(installModules.root, '') : module}", ${strCallbackWrap(source)}]`;
+            if (!config.config.corejs) source = replaceBabelModule(source);
+            return `["${isNode ? module.replace(installModules.root, '') : module}", ${removeRN(strCallbackWrap(source))}]`;
         });
         
-        return (`(${strDevpacker()})(this, [${params.join(',\n')}])`);
+        return (`(${removeRN(strDevpacker())})(this, [${removeRN(params.join(`,${config.getNewLine()}`))}])`);
     }
 
     /**

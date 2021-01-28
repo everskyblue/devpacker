@@ -10,8 +10,8 @@ var formats = ['umd', 'cjs'];
 var appConfig = Object.assign({}, defaultConfig);
 
 /**
-* @url https://github.com/jamiebuilds/babel-plugin-remove-comments
-*/
+ * @url https://github.com/jamiebuilds/babel-plugin-remove-comments
+ */
 Babel.registerPlugin('remove-comments', function(o) {
     var t = o.types;
     return {
@@ -25,7 +25,7 @@ Babel.registerPlugin('remove-comments', function(o) {
             }
         }
     };
-})
+});
 
 function assign(target, assgn) {
     for (var key in assgn) {
@@ -69,6 +69,9 @@ var config = {
             babel: opt,
             corejs: corejs
         }
+    },
+    getNewLine: function () {
+        return !this.config.minified ? '\n' : '';
     }
 }
 
