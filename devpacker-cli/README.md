@@ -15,11 +15,10 @@ out file
 > devpacker --entry filename.js --output bundle.js --format umd --minified true
 ```
 
-create configuration file and run bundle
+create configuration file
 
 ```bash
 > devpacker -cf
-> devpacker start
 ```
 
 **devpacker.config.js**
@@ -43,4 +42,10 @@ module.exports = [{
      */
     include: /[]/ 
 }]
+```
+
+run bundle
+
+```bash
+> devpacker start
 ```

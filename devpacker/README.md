@@ -12,7 +12,7 @@ import scripts
 ```html
 <script src="./devpacker/package/babel-6.26.0.js"></script>
 <script src="./devpacker/package/babel-polyfill-6.26.0.min.js"></script>
-<script src="./devpacker/bundle/devpacker.js"></script>
+<script src="./devpacker/devpacker.bundle.js"></script>
 
 ```
 
@@ -51,7 +51,7 @@ to use in command line use
 
 ```bash
 > npm install -g devpacker-cli
-> devpacker -c
+> devpacker -h
 ```
 for more information read devpacker-cli
 
