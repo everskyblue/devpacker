@@ -1,5 +1,5 @@
 # Devpacker Util
 
-funcionalidad devpacker para generar codigo fuente.
+devpacker functionality to generate source code.
 
-__*utiliza codigo fuente de babel-helpers v6.x*__
+__*source code babel-helpers v6.x*__

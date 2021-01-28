@@ -1,11 +1,9 @@
 {
   "name": "devpacker-util",
-  "version": "1.0.0",
-  "description": "utilidad de helpers para la funcionalidad al empaquetar archivos javascript usando devpacker",
+  "version": "1.0.2",
+  "description": "helpers utility for functionality when packing javascript files using devpacker",
   "main": "babel-helpers.js",
-  "scripts": {
-    "rollup": "rollup -i babel-helpers.module.js -o babel-helpers.js -f cjs"
-  },
+  "files": ["fn-get-or-throw.js", "package.json"],
   "keywords": [
     "devpacker",
     "devpacker-util",
