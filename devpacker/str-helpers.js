@@ -5,8 +5,8 @@ export function strDevpacker() {
     return devpackerHelpers.toString();
 }
 
-export function strCallbackWrap(source) {
-    return `(function __devpacker__wrapper(require, module, exports) {\n${source}\n})`;
+export function strCallbackWrap(source, newLine) {
+    return `(function __devpacker__wrapper(require, module, exports) {${newLine + source + newLine}})`;
 }
 
 export function strCheckMethod($class, method) {

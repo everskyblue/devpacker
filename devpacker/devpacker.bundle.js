@@ -835,8 +835,8 @@
         return __devpacker__.toString();
     }
 
-    function strCallbackWrap(source) {
-        return `(function __devpacker__wrapper(require, module, exports) {\n${source}\n})`;
+    function strCallbackWrap(source, newLine) {
+        return `(function __devpacker__wrapper(require, module, exports) {${newLine + source + newLine}})`;
     }
 
     function strCheckMethod($class, method) {
@@ -1037,10 +1037,10 @@ exports.checkMethod = checkMethod;`
         
         var params = mods.map(({source, module}) => {
             if (!config.config.corejs) source = replaceBabelModule(source);
-            return `["${isNode ? module.replace(installModules.root, '') : module}", ${removeRN(strCallbackWrap(source))}]`;
+            return `["${isNode ? module.replace(installModules.root, '') : module}", ${strCallbackWrap(source, config.getNewLine())}]`;
         });
         
-        return (`(${removeRN(strDevpacker())})(this, [${removeRN(params.join(`,${config.getNewLine()}`))}])`);
+        return (`(${removeRN(strDevpacker())})(this, [${params.join(`,${config.getNewLine()}`)}])`);
     }
 
     /**

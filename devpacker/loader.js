@@ -186,10 +186,10 @@ function transformCodeToUMD(mods) {
     
     var params = mods.map(({source, module}) => {
         if (!optionConfig.config.corejs) source = replaceBabelModule(source);
-        return `["${isNode ? module.replace(installModules.root, '') : module}", ${removeRN(strCallbackWrap(source))}]`;
+        return `["${isNode ? module.replace(installModules.root, '') : module}", ${strCallbackWrap(source, optionConfig.getNewLine())}]`;
     });
     
-    return (`(${removeRN(strDevpacker())})(this, [${removeRN(params.join(`,${optionConfig.getNewLine()}`))}])`);
+    return (`(${removeRN(strDevpacker())})(this, [${params.join(`,${optionConfig.getNewLine()}`)}])`);
 }
 
 /**
