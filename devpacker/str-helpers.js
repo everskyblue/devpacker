@@ -1,4 +1,5 @@
 import devpackerHelpers from "./helpers";
+import {checkMethod, checkFunction} from "../devpacker-util/fn/get-or-throw";
 
 export function strDevpacker() {
     return devpackerHelpers.toString();
@@ -9,6 +10,16 @@ export function strCallbackWrap(source) {
 }
 
 export function strCheckMethod($class, method) {
-    return `("${method}" in ${$class}) ? function(o) { return ${$class}.prototype.${method}.apply(o, Array.prototype.slice.call(arguments, 1)); } : (function () { throw "${$class}.${method} is not a function"; })();`
+    return `module.exports = require("devpacker-util/fn-get-or-throw").checkMethod(global.${$class}, "${method}");`;
 }
 
+export function strCheckFunction($class) {
+    return `module.exports = require("devpacker-util/fn-get-or-throw").checkFunction(global.${$class});`
+}
+
+export function strCheck() {
+    return `${checkFunction.toString()}
+${checkMethod.toString()}
+exports.checkFunction = checkFunction;
+exports.checkMethod = checkMethod;`
+} 
