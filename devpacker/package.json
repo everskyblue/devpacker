@@ -1,6 +1,6 @@
 {
   "name": "devpacker",
-  "version": "0.2.10",
+  "version": "0.3.11",
   "description": "compiler ecma5 using babeljs 6 and loader module Browser and NodeJs",
   "main": "devpacker.bundle.js",
   "homepage": "https://github.com/everskyblue/devpacker#README.md",

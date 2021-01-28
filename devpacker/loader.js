@@ -273,6 +273,6 @@ export function generator(loader) {
     return loader.then(transformCode);
 }
 
-export const VERSION = '0.2.7';
+export const VERSION = '0.3.11';
 
 export {optionConfig};
