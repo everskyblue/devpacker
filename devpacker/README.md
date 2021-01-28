@@ -51,7 +51,7 @@ to use in command line use
 
 ```bash
 > npm install -g devpacker-cli
-> devpacker -c
+> devpacker -h
 ```
 for more information read devpacker-cli
 
